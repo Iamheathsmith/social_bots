@@ -1,0 +1,35 @@
+name: Bluesky Bot
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # run ever 10 min for testing
+  workflow_dispatch: # allows manual trigger
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install atproto
+
+      - name: Run bot
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
+        run: python bot.py
+
+      - name: Commit changes (move images & update captions.json)
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git add images_posted captions.json
+          git commit -m "Update posted images and captions [skip ci]" || echo "No changes"
+          git push
