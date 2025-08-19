@@ -41,12 +41,8 @@ jobs:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
         run: |
-          if [ ! -f "./bot.py" ]; then
-            echo "❌ bot.py not found in repo root!"
-            exit 1
-          fi
-          echo "✅ Found bot.py, running..."
-          python3 ./bot.py
+          echo "Running bot.py directly..."
+          python3 bot.py
 
       # ✅ Commit changes (move images & update captions.json)
       - name: Commit changes (move images & update captions.json)
