@@ -9,17 +9,33 @@ jobs:
   post:
     runs-on: ubuntu-latest
     steps:
+      # ✅ Checkout repo (full depth)
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # ✅ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
+      # ✅ Install dependencies
       - name: Install dependencies
         run: pip install atproto
 
+      # 🔹 Debug repo structure
+      - name: Debug repo
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Files at root:"
+          ls -la
+          echo "Searching for bot.py recursively:"
+          find . -type f -name "bot.py"
+
+      # ✅ Run bot
       - name: Run bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
@@ -32,6 +48,7 @@ jobs:
           echo "✅ Found bot.py, running..."
           python3 ./bot.py
 
+      # ✅ Commit changes (move images & update captions.json)
       - name: Commit changes (move images & update captions.json)
         run: |
           git config --global user.name "github-actions"
