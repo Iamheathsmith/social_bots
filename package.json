@@ -1,0 +1,24 @@
+{
+	"name": "bluesky-bot",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/blue_sky_bot.js",
+		"dev": "ts-node blue_sky_bot.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@atproto/api": "^0.16.2",
+		"sharp": "^0.34.3",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.2"
+	},
+	"devDependencies": {
+		"@types/node": "^24.3.0"
+	},
+	"type": "module"
+}
