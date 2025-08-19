@@ -30,8 +30,8 @@ try:
     with open(CAPTIONS_FILE, "r") as f:
         captions = json.load(f)
 
-    print(f"HANDLE: {HANDLE}")
-    print(f"APP_PASSWORD: {APP_PASSWORD}")
+    print("HANDLE is set:", bool(os.environ.get('BLUESKY_HANDLE')))
+    print("APP_PASSWORD is set:", bool(os.environ.get('BLUESKY_APP_PW')))
 
     # --- Bluesky login ---
     client = Client()
