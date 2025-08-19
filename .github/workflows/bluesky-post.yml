@@ -2,7 +2,7 @@ name: Bluesky Bot
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # run ever 10 min for testing
+    - cron: "*/10 * * * *" # run every 10 min for testing
   workflow_dispatch: # allows manual trigger
 
 jobs:
@@ -20,19 +20,17 @@ jobs:
       - name: Install dependencies
         run: pip install atproto
 
-      - name: Run bot (auto-detect path)
+      - name: Run bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
         run: |
-          echo "Looking for bot.py..."
-          BOT_PATH=$(find . -type f -name "bot.py" | head -n 1)
-          if [ -z "$BOT_PATH" ]; then
-            echo "❌ bot.py not found!"
+          if [ ! -f "./bot.py" ]; then
+            echo "❌ bot.py not found in repo root!"
             exit 1
           fi
-          echo "✅ Found bot.py at: $BOT_PATH"
-          python "$BOT_PATH"
+          echo "✅ Found bot.py, running..."
+          python3 ./bot.py
 
       - name: Commit changes (move images & update captions.json)
         run: |
