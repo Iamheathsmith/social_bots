@@ -9,8 +9,8 @@ TO_POST = os.path.join(BASE_PATH, "images_to_post")
 POSTED = os.path.join(BASE_PATH, "images_posted")
 CAPTIONS_FILE = os.path.join(BASE_PATH, "captions.json")
 
-HANDLE = os.environ['HANDLE']
-APP_PASSWORD = os.environ['APP_PASSWORD']
+HANDLE = os.environ['BLUESKY_HANDLE']
+APP_PASSWORD = os.environ['BLUESKY_APP_PW']
 
 # --- LOGGING ---
 def log(msg):
