@@ -32,8 +32,8 @@ jobs:
           pwd
           echo "Files at root:"
           ls -la
-          echo "Searching for bot.py recursively:"
-          find . -type f -name "bot.py"
+          echo "Searching for clean-bot.py recursively:"
+          find . -type f -name "clean-bot.py"
           echo "Which Python is running?"
           which python
           python --version
@@ -44,12 +44,12 @@ jobs:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
         run: |
-          BOT_PATH="$(pwd)/bot.py"
+          BOT_PATH="$(pwd)/clean-bot.py"
           if [ ! -f "$BOT_PATH" ]; then
-            echo "❌ bot.py not found at $BOT_PATH!"
+            echo "❌ clean-bot.py not found at $BOT_PATH!"
             exit 1
           fi
-          echo "✅ Found bot.py at $BOT_PATH, running..."
+          echo "✅ Found clean-bot.py at $BOT_PATH, running..."
           python "$BOT_PATH"
 
       # ✅ Commit changes (move images & update captions.json)
