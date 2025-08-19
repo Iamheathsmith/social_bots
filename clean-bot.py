@@ -9,10 +9,8 @@ TO_POST = os.path.join(BASE_PATH, "images_to_post")
 POSTED = os.path.join(BASE_PATH, "images_posted")
 CAPTIONS_FILE = os.path.join(BASE_PATH, "captions.json")
 
-HANDLE = os.getenv("BLUESKY_HANDLE")       # from GitHub Secrets
-APP_PASSWORD = os.getenv("BLUESKY_APP_PW") # from GitHub Secrets
-print(HANDLE)
-print(APP_PASSWORD)
+HANDLE = os.environ['HANDLE']
+APP_PASSWORD = os.environ['APP_PASSWORD']
 
 # --- LOGGING ---
 def log(msg):
