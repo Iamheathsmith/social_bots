@@ -9,10 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 🔑 Load creds from environment variables
-// const HANDLE = process.env.BLUESKY_HANDLE as string;
-// const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
-const HANDLE = "kr0nk.bsky.social";
-const APP_PASSWORD = "HoduDahee123";
+const HANDLE = process.env.BLUESKY_HANDLE as string;
+const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
 
 // --- 1. Init Bluesky client ---
 const agent = new AtpAgent({ service: "https://bsky.social" });

@@ -2,61 +2,28 @@ name: Bluesky Bot
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # run every 10 min for testing
-  workflow_dispatch: # allows manual trigger
+    # Runs every 5 mins for testig
+    - cron: "*/5 * * * *"
+  workflow_dispatch: # allows manual run
 
 jobs:
-  post:
+  post-image:
     runs-on: ubuntu-latest
+
     steps:
-      # ✅ Checkout repo (full depth)
       - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
-      # ✅ Set up Python
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          python-version: "3.x"
+          node-version: 20
 
-      # ✅ Install dependencies
       - name: Install dependencies
-        run: pip install atproto
+        run: npm ci
 
-      # 🔹 Debug repo structure
-      - name: Debug repo
-        run: |
-          echo "Current working directory:"
-          pwd
-          echo "Files at root:"
-          ls -la
-          echo "Searching for clean-bot.py recursively:"
-          find . -type f -name "clean-bot.py"
-          echo "Which Python is running?"
-          which python
-          python --version
-
-      # ✅ Run bot using absolute path
-      - name: Run bot
+      - name: Run Bluesky Bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
-          BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
-        run: |
-          BOT_PATH="$(pwd)/clean-bot.py"
-          if [ ! -f "$BOT_PATH" ]; then
-            echo "❌ clean-bot.py not found at $BOT_PATH!"
-            exit 1
-          fi
-          echo "✅ Found clean-bot.py at $BOT_PATH, running..."
-          python "$BOT_PATH"
-
-      # ✅ Commit changes (move images & update captions.json)
-      - name: Commit changes (move images & update captions.json)
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-          git add images_posted captions.json
-          git commit -m "Update posted images and captions [skip ci]" || echo "No changes"
-          git push
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+        run: node dist/blue_sky_bot.js
