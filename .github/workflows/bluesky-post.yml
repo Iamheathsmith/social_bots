@@ -20,11 +20,19 @@ jobs:
       - name: Install dependencies
         run: pip install atproto
 
-      - name: Run bot
+      - name: Run bot (auto-detect path)
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
-        run: python bot.py
+        run: |
+          echo "Looking for bot.py..."
+          BOT_PATH=$(find . -type f -name "bot.py" | head -n 1)
+          if [ -z "$BOT_PATH" ]; then
+            echo "❌ bot.py not found!"
+            exit 1
+          fi
+          echo "✅ Found bot.py at: $BOT_PATH"
+          python "$BOT_PATH"
 
       - name: Commit changes (move images & update captions.json)
         run: |
