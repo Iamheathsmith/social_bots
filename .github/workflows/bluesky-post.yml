@@ -24,7 +24,7 @@ jobs:
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
-        run: python bot.py
+        run: python bluesky-bot/bot.py
 
       - name: Commit changes (move images & update captions.json)
         run: |
