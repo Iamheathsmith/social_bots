@@ -11,6 +11,8 @@ CAPTIONS_FILE = os.path.join(BASE_PATH, "captions.json")
 
 HANDLE = os.getenv("BLUESKY_HANDLE")       # from GitHub Secrets
 APP_PASSWORD = os.getenv("BLUESKY_APP_PW") # from GitHub Secrets
+print(HANDLE)
+print(APP_PASSWORD)
 
 # --- LOGGING ---
 def log(msg):
