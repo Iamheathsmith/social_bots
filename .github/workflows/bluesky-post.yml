@@ -34,15 +34,22 @@ jobs:
           ls -la
           echo "Searching for bot.py recursively:"
           find . -type f -name "bot.py"
+          echo "Which Python is running?"
+          which python
+          python --version
 
-      # ✅ Run bot
+      # ✅ Run bot using setup-python's Python
       - name: Run bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PW: ${{ secrets.BLUESKY_APP_PW }}
         run: |
-          echo "Running bot.py directly..."
-          python3 bot.py
+          if [ ! -f "./bot.py" ]; then
+            echo "❌ bot.py not found in repo root!"
+            exit 1
+          fi
+          echo "✅ Found bot.py, running..."
+          python bot.py
 
       # ✅ Commit changes (move images & update captions.json)
       - name: Commit changes (move images & update captions.json)
