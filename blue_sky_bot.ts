@@ -70,13 +70,14 @@ async function runBot() {
 
 	// --- 8. Post with correct alt ---
 	await agent.post({
-		text: `${captionText} ${captionHashtag}`,
+		text: `Testing`,
+		// text: `${captionText} ${captionHashtag}`,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
 				{
 					image: uploadedImg.data.blob,
-					alt: captionText,
+					alt: "testing",
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
