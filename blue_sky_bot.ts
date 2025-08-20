@@ -59,8 +59,11 @@ async function runBot() {
 
 	// --- 6. Get text + hashtag from JSON ---
 	const captionData = captions[randomFile];
+	console.log("captionData: ", captionData);
 	const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
+	console.log("captionText: ", captionText);
 	const captionHashtag = captionData?.hashtag || "#MorningMagic";
+	console.log("captionHashtag: ", captionHashtag);
 
 	// --- 7. Upload image ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, {
