@@ -58,9 +58,18 @@ async function runBot() {
 	const finalMetadata = await sharp(processedBuffer).metadata();
 
 	// --- 6. Get text + hashtag from JSON ---
+	// const captionData = captions[randomFile] || {};
+	// const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
+	// const captionHashtag = captionData?.hashtag || "MorningMagic";
 	const captionData = captions[randomFile] || {};
-	const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
-	const captionHashtag = captionData?.hashtag || "MorningMagic";
+	let captionText = captionData?.text;
+
+	if (typeof captionText !== "string" || !captionText.trim()) {
+		captionText = "Image"; // fallback if empty or invalid
+	}
+
+	const captionHashtag =
+		typeof captionData?.hashtag === "string" && captionData.hashtag.trim() ? captionData.hashtag : "MorningMagic";
 
 	// --- 7. Upload image to Bluesky using processed buffer ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, {
