@@ -23,6 +23,7 @@ async function runBot() {
 
 	// --- 4. Find unused images ---
 	const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
+	console.log("unusedImages: ", unusedImages);
 
 	if (unusedImages.length === 0) {
 		console.log("No unused images left.");

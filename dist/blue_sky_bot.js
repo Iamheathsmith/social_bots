@@ -17,54 +17,59 @@ async function runBot() {
     await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
     // --- 3. Load JSON captions ---
     const captions = JSON.parse(fs.readFileSync("captions.json", "utf8"));
-    // --- 4. Pick a random image from /images ---
-    const imagesDir = path.join(__dirname, "images");
-    const postedDir = path.join(__dirname, "posted");
-    if (!fs.existsSync(postedDir)) {
-        fs.mkdirSync(postedDir);
+    // --- 4. Find unused images ---
+    const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
+    if (unusedImages.length === 0) {
+        console.log("No unused images left.");
+        return;
     }
-    const files = fs.readdirSync(imagesDir).filter((f) => !f.startsWith("."));
-    if (files.length === 0)
-        throw new Error("No images found in images/");
-    const randomFile = files[Math.floor(Math.random() * files.length)];
-    const imagePath = path.join(imagesDir, randomFile);
-    // --- 5. Load image and resize to max 2000px on long side ---
-    const image = sharp(imagePath);
-    const metadata = await image.metadata();
-    let resizeOptions = {};
-    if (metadata.width && metadata.height) {
-        if (metadata.width >= metadata.height && metadata.width > 2000) {
-            resizeOptions = { width: 2000 };
+    // Pick a random unused image
+    const randomFile = unusedImages[Math.floor(Math.random() * unusedImages.length)];
+    const imagePath = path.join(__dirname, "images", randomFile);
+    // --- 5. Load image and resize to max 2000px ---
+    let quality = 100;
+    let processedBuffer;
+    while (true) {
+        const image = sharp(imagePath);
+        const metadata = await image.metadata();
+        let resizeOptions = {};
+        if (metadata.width && metadata.height) {
+            if (metadata.width > 2000 || metadata.height > 2000) {
+                if (metadata.width >= metadata.height)
+                    resizeOptions = { width: 2000 };
+                else
+                    resizeOptions = { height: 2000 };
+            }
         }
-        else if (metadata.height > metadata.width && metadata.height > 2000) {
-            resizeOptions = { height: 2000 };
-        }
+        processedBuffer = await image.resize(resizeOptions).rotate().withMetadata().jpeg({ quality }).toBuffer();
+        if (processedBuffer.byteLength <= 976560 || quality <= 40)
+            break;
+        quality -= 5; // step down quality until under 976 KB
     }
-    const processedBuffer = await image
-        .resize(resizeOptions) // resize long side ≤ 2000px
-        .rotate() // auto-rotate based on EXIF
-        .jpeg({ quality: 80 }) // compress to reduce size
-        .toBuffer();
     const finalMetadata = await sharp(processedBuffer).metadata();
-    // Optional safety check
-    if (processedBuffer.byteLength > 976560) {
-        throw new Error(`Processed image is still too large: ${(processedBuffer.byteLength / 1024).toFixed(2)} KB`);
+    // --- 6. Get text + hashtag from JSON ---
+    // const captionData = captions[randomFile] || {};
+    // const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
+    // const captionHashtag = captionData?.hashtag || "MorningMagic";
+    const captionData = captions[randomFile] || {};
+    let captionText = captionData?.text;
+    if (typeof captionText !== "string" || !captionText.trim()) {
+        captionText = "Image"; // fallback if empty or invalid
     }
-    // --- 6. Get caption from JSON ---
-    const caption = captions[randomFile] || "No caption provided";
+    const captionHashtag = typeof captionData?.hashtag === "string" && captionData.hashtag.trim() ? captionData.hashtag : "MorningMagic";
     // --- 7. Upload image to Bluesky using processed buffer ---
     const uploadedImg = await agent.uploadBlob(processedBuffer, {
         encoding: "image/jpeg", // works for both jpeg and png if converted
     });
     // --- 8. Post with caption + hashtag and aspectRatio ---
     await agent.post({
-        text: `${caption} #MyBot`,
+        text: `${captionText} #${captionHashtag}`,
         embed: {
             $type: "app.bsky.embed.images",
             images: [
                 {
                     image: uploadedImg.data.blob,
-                    alt: caption,
+                    alt: String(captionText || ""),
                     aspectRatio: {
                         width: finalMetadata.width ?? 2000,
                         height: finalMetadata.height ?? 2000,
@@ -73,10 +78,9 @@ async function runBot() {
             ],
         },
     });
-    console.log(`✅ Posted ${randomFile} with caption.`);
-    // --- 9. Move posted file to /posted ---
-    const newPath = path.join(postedDir, randomFile);
-    fs.renameSync(imagePath, newPath);
-    console.log(`📂 Moved ${randomFile} → posted/`);
+    // --- 9. Mark as used in captions.json ---
+    captions[randomFile].used = true;
+    fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
+    console.log(`Posted ${randomFile} and updated captions.json.`);
 }
 runBot().catch(console.error);
