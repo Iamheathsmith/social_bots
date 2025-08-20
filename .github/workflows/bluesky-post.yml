@@ -30,13 +30,14 @@ jobs:
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
         run: node dist/blue_sky_bot.js
 
-      - name: Commit captions.json updates
-        if: success() # only commit if bot ran successfully
+      - name: Commit and push changes
+        if: success() # <-- only runs if Run Bluesky Bot succeeds
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add captions.json
           git diff --cached --quiet || git commit -m "Update captions.json (mark used images)"
-          git push
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push origin HEAD:${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

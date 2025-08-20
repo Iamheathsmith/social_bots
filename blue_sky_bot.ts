@@ -74,7 +74,7 @@ async function runBot() {
 			images: [
 				{
 					image: uploadedImg.data.blob,
-					alt: captionText,
+					alt: "Image",
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
