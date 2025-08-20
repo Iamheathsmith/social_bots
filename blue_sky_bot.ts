@@ -57,9 +57,10 @@ async function runBot() {
 	const finalMetadata = await sharp(processedBuffer).metadata();
 
 	// --- 6. Get text + hashtag from JSON ---
-	const captionData = captions[randomFile];
+	const fileKey = path.basename(randomFile); // removes folder path
+	const captionData = captions[fileKey] || {};
 	const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
-	const captionHashtag = captionData?.hashtag || "#MorningMagic";
+	const captionHashtag = `#${captionData?.hashtag || "MorningMagic"}`;
 
 	// --- 7. Upload image ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, {
