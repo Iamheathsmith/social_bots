@@ -19,8 +19,7 @@ async function runBot() {
 	await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
 
 	// --- 3. Load JSON captions ---
-	const captionsPath = path.join(__dirname, "captions.json");
-	const captions = JSON.parse(fs.readFileSync(captionsPath, "utf8"));
+	const captions = JSON.parse(fs.readFileSync("captions.json", "utf8"));
 
 	// --- 4. Find unused images ---
 	const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
@@ -89,7 +88,7 @@ async function runBot() {
 
 	// --- 9. Mark as used in captions.json ---
 	captions[randomFile].used = true;
-	fs.writeFileSync(captionsPath, JSON.stringify(captions, null, 2));
+	fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
 	console.log(`Posted ${randomFile} and updated captions.json.`);
 }
 
