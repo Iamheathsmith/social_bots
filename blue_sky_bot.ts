@@ -77,9 +77,27 @@ async function runBot() {
 		encoding: "image/jpeg", // works for both jpeg and png if converted
 	});
 
+	const facets = captionHashtag
+		.map((tag: string) => {
+			const tagIndex = captionText.indexOf(`#${tag}`);
+			if (tagIndex === -1) return null; // skip if not found
+			return {
+				$type: "app.bsky.richtext.facet",
+				index: { start: tagIndex, end: tagIndex + tag.length + 1 }, // +1 for the '#'
+				features: [
+					{
+						$type: "app.bsky.richtext.facet#hashtag",
+						text: tag,
+					},
+				],
+			};
+		})
+		.filter(Boolean); // remove nulls
+
 	// --- 8. Post with caption + hashtag and aspectRatio ---
 	await agent.post({
-		text: `${captionText} #${captionHashtag}`,
+		text: `${captionText}`,
+		facets,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
