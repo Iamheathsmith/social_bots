@@ -19,12 +19,14 @@ async function runBot() {
 	await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
 
 	// --- 3. Load JSON captions ---
-	const captions = JSON.parse(fs.readFileSync("captions.json", "utf8"));
+	const captionsPath = path.join(__dirname, "captions.json");
+	const captions = JSON.parse(fs.readFileSync(captionsPath, "utf8"));
 
 	// --- 4. Find unused images ---
 	const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
 
 	if (unusedImages.length === 0) {
+		console.log("No unused images left.");
 		return;
 	}
 
@@ -57,8 +59,7 @@ async function runBot() {
 	const finalMetadata = await sharp(processedBuffer).metadata();
 
 	// --- 6. Get text + hashtag from JSON ---
-	const fileKey = path.basename(randomFile); // removes folder path
-	const captionData = captions[fileKey] || {};
+	const captionData = captions[randomFile] || {};
 	const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
 	const captionHashtag = `#${captionData?.hashtag || "MorningMagic"}`;
 
@@ -67,15 +68,15 @@ async function runBot() {
 		encoding: "image/jpeg",
 	});
 
-	// --- 8. Post ---
+	// --- 8. Post with correct alt ---
 	await agent.post({
 		text: `${captionText} ${captionHashtag}`,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
 				{
-					image: uploadedImg.data.blob,
-					alt: "Image",
+					image: uploadedImg.data.blob, // use blobRef
+					alt: captionText.substring(0, 100), // first 100 chars as alt text
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
@@ -87,7 +88,8 @@ async function runBot() {
 
 	// --- 9. Mark as used in captions.json ---
 	captions[randomFile].used = true;
-	fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
+	fs.writeFileSync(captionsPath, JSON.stringify(captions, null, 2));
+	console.log(`Posted ${randomFile} and updated captions.json.`);
 }
 
 runBot().catch(console.error);
