@@ -23,7 +23,7 @@ async function runBot() {
 
 	// --- 4. Find unused images ---
 	const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
-	console.log("unusedImages: ", unusedImages);
+	console.log("unusedImages:", unusedImages);
 
 	if (unusedImages.length === 0) {
 		console.log("No unused images left.");
@@ -45,65 +45,56 @@ async function runBot() {
 		let resizeOptions = {};
 		if (metadata.width && metadata.height) {
 			if (metadata.width > 2000 || metadata.height > 2000) {
-				if (metadata.width >= metadata.height) resizeOptions = { width: 2000 };
-				else resizeOptions = { height: 2000 };
+				resizeOptions = metadata.width >= metadata.height ? { width: 2000 } : { height: 2000 };
 			}
 		}
 
 		processedBuffer = await image.resize(resizeOptions).rotate().withMetadata().jpeg({ quality }).toBuffer();
 
 		if (processedBuffer.byteLength <= 976_560 || quality <= 40) break;
-		quality -= 5; // step down quality until under 976 KB
+		quality -= 5;
 	}
 
 	const finalMetadata = await sharp(processedBuffer).metadata();
 
-	// --- 6. Get text + hashtag from JSON ---
-	// const captionData = captions[randomFile] || {};
-	// const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
-	// const captionHashtag = captionData?.hashtag || "MorningMagic";
+	// --- 6. Get caption text + hashtag(s) ---
 	const captionData = captions[randomFile] || {};
-	let captionText = captionData?.text;
+	let captionText = captionData?.text?.trim() || "Good morning! Hope you have a wonderful day!";
+	const captionHashtags = captionData?.hashtag
+		? captionData.hashtag
+				.split(",")
+				.map((h: string) => h.trim())
+				.filter(Boolean)
+		: ["MorningMagic"];
 
-	if (typeof captionText !== "string" || !captionText.trim()) {
-		captionText = "Image"; // fallback if empty or invalid
-	}
-
-	const captionHashtag =
-		typeof captionData?.hashtag === "string" && captionData.hashtag.trim() ? captionData.hashtag : "MorningMagic";
-
-	// --- 7. Upload image to Bluesky using processed buffer ---
-	const uploadedImg = await agent.uploadBlob(processedBuffer, {
-		encoding: "image/jpeg", // works for both jpeg and png if converted
+	// Ensure hashtags are in the text
+	captionHashtags.forEach((tag) => {
+		if (!captionText.includes(`#${tag}`)) captionText += ` #${tag}`;
 	});
 
-	const facets = captionHashtag
-		.map((tag: string) => {
-			const tagIndex = captionText.indexOf(`#${tag}`);
-			if (tagIndex === -1) return null; // skip if not found
-			return {
-				$type: "app.bsky.richtext.facet",
-				index: { start: tagIndex, end: tagIndex + tag.length + 1 }, // +1 for the '#'
-				features: [
-					{
-						$type: "app.bsky.richtext.facet#hashtag",
-						text: tag,
-					},
-				],
-			};
-		})
-		.filter(Boolean); // remove nulls
+	// --- 7. Upload image to Bluesky ---
+	const uploadedImg = await agent.uploadBlob(processedBuffer, { encoding: "image/jpeg" });
 
-	// --- 8. Post with caption + hashtag and aspectRatio ---
+	// --- 8. Build facets for hashtags ---
+	const facets = captionHashtags.map((tag) => {
+		const start = captionText.indexOf(`#${tag}`);
+		return {
+			$type: "app.bsky.richtext.facet",
+			index: { start, end: start + tag.length + 1 },
+			features: [{ $type: "app.bsky.richtext.facet#hashtag", text: tag }],
+		};
+	});
+
+	// --- 9. Post with image and facets ---
 	await agent.post({
-		text: `${captionText}`,
+		text: captionText,
 		facets,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
 				{
 					image: uploadedImg.data.blob,
-					alt: String(captionText || ""),
+					alt: captionText,
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
@@ -113,10 +104,10 @@ async function runBot() {
 		},
 	});
 
-	// --- 9. Mark as used in captions.json ---
+	// --- 10. Mark as used ---
 	captions[randomFile].used = true;
 	fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
-	console.log(`Posted ${randomFile} and updated captions.json.`);
+	console.log(`Posted ${randomFile} with hashtags and updated captions.json.`);
 }
 
 runBot().catch(console.error);
