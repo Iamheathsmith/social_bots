@@ -22,6 +22,7 @@ export class UnicodeString {
 }
 
 export function detectFacets(text: UnicodeString): Facet[] | undefined {
+	console.log("text: ", text);
 	let match;
 	const facets: Facet[] = [];
 	{
@@ -112,6 +113,7 @@ export function detectFacets(text: UnicodeString): Facet[] | undefined {
 			});
 		}
 	}
+	console.log("facets: ", facets);
 	return facets.length > 0 ? facets : undefined;
 }
 
