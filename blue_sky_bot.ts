@@ -58,11 +58,9 @@ async function runBot() {
 	const finalMetadata = await sharp(processedBuffer).metadata();
 
 	// --- 6. Get text + hashtag from JSON ---
-	// const captionData = captions[randomFile] || {};
-	// const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
-	// const captionHashtag = `#${captionData?.hashtag || "MorningMagic"}`;
-	// --- 6. Get caption from JSON ---
-	const caption = captions[randomFile].text || "No caption provided";
+	const captionData = captions[randomFile] || {};
+	const captionText = captionData?.text || "Good morning! Hope you have a wonderful day!";
+	const captionHashtag = captionData?.hashtag || "MorningMagic";
 
 	// --- 7. Upload image to Bluesky using processed buffer ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, {
@@ -71,13 +69,13 @@ async function runBot() {
 
 	// --- 8. Post with caption + hashtag and aspectRatio ---
 	await agent.post({
-		text: `${caption} #MyBot`,
+		text: `${captionText} #${captionHashtag}`,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
 				{
 					image: uploadedImg.data.blob,
-					alt: caption,
+					alt: `${captionText}`,
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
