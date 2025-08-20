@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import { AtpAgent } from "@atproto/api";
+import { AtpAgent, UnicodeString } from "@atproto/api";
 import { fileURLToPath } from "url";
+import { detectFacets } from "./helpers";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,21 +67,10 @@ async function runBot() {
 	// --- 7. Upload image to Bluesky ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, { encoding: "image/jpeg" });
 
-	// --- 8. Create facet for the single hashtag
-	const hashtagIndex = finalText.indexOf(`#${hashtag}`);
-
-	const facets = [
-		{
-			$type: "app.bsky.richtext.facet",
-			index: { start: hashtagIndex, end: hashtagIndex + hashtag.length + 1 },
-			features: [{ $type: "app.bsky.richtext.facet#hashtag", text: hashtag }],
-		},
-	] as any;
-
-	// --- 9. Post with image and facets ---
+	// --- 8. Post with image and facets ---
 	await agent.post({
 		text: finalText,
-		entities: facets,
+		facets: detectFacets(new UnicodeString(finalText)),
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
