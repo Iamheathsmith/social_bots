@@ -60,41 +60,33 @@ async function runBot() {
 	// --- 6. Get caption text + hashtag(s) ---
 	const captionData = captions[randomFile] || {};
 	let captionText = captionData?.text?.trim() || "Good morning! Hope you have a wonderful day!";
-	const captionHashtags = captionData?.hashtag
-		? captionData.hashtag
-				.split(",")
-				.map((h: string) => h.trim())
-				.filter(Boolean)
-		: ["MorningMagic"];
-
-	// Ensure hashtags are in the text
-	captionHashtags.forEach((tag) => {
-		if (!captionText.includes(`#${tag}`)) captionText += ` #${tag}`;
-	});
+	const hashtag = captionData?.hashtag?.trim() || "MorningMagic";
+	const finalText = `${captionText} ${hashtag}`;
 
 	// --- 7. Upload image to Bluesky ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, { encoding: "image/jpeg" });
 
-	// --- 8. Build facets for hashtags ---
-	const facets = captionHashtags.map((tag) => {
-		const start = captionText.indexOf(`#${tag}`);
-		return {
+	// --- 8. Create facet for the single hashtag
+	const hashtagIndex = finalText.indexOf(`#${hashtag}`);
+
+	const facets = [
+		{
 			$type: "app.bsky.richtext.facet",
-			index: { start, end: start + tag.length + 1 },
-			features: [{ $type: "app.bsky.richtext.facet#hashtag", text: tag }],
-		};
-	});
+			index: { start: hashtagIndex, end: hashtagIndex + hashtag.length + 1 },
+			features: [{ $type: "app.bsky.richtext.facet#hashtag", text: hashtag }],
+		},
+	] as any;
 
 	// --- 9. Post with image and facets ---
 	await agent.post({
-		text: captionText,
-		facets,
+		text: finalText,
+		entities: facets,
 		embed: {
 			$type: "app.bsky.embed.images",
 			images: [
 				{
 					image: uploadedImg.data.blob,
-					alt: captionText,
+					alt: finalText,
 					aspectRatio: {
 						width: finalMetadata.width ?? 2000,
 						height: finalMetadata.height ?? 2000,
