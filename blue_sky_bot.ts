@@ -62,7 +62,7 @@ async function runBot() {
 	const captionData = captions[randomFile] || {};
 	let captionText = captionData?.text?.trim() || "Good morning! Hope you have a wonderful day!";
 	const hashtag = captionData?.hashtag?.trim() || "MorningMagic";
-	const finalText = `${captionText} ${hashtag}`;
+	const finalText = `${captionText} #${hashtag}`;
 
 	// --- 7. Upload image to Bluesky ---
 	const uploadedImg = await agent.uploadBlob(processedBuffer, { encoding: "image/jpeg" });
