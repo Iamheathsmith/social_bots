@@ -1,190 +1,237 @@
 {
 	"image-1.jpg": {
 		"text": "Sunset over a calm Tokyo as the tower stand guard",
-		"hashtag": "Tokyo"
+		"hashtag": "Tokyo",
+		"used": false
 	},
 	"image-2.jpg": {
 		"text": "The colosseum in rome, One of the best sights at blue hour",
-		"hashtag": "Rome"
+		"hashtag": "Rome",
+		"used": false
 	},
 	"image-3.jpg": {
 		"text": "Thialand is always better at the beach.",
-		"hashtag": "Thialand"
+		"hashtag": "Thialand",
+		"used": false
 	},
 	"image-4.jpg": {
 		"text": "A tunnel of mirrors",
-		"hashtag": "Japan"
+		"hashtag": "Japan",
+		"used": false
 	},
 	"image-5.jpg": {
 		"text": "Walk the magical path in Hakone Japan.",
-		"hashtag": "Japan"
+		"hashtag": "Japan",
+		"used": false
 	},
 	"image-6.jpg": {
 		"text": "Shibuya crossing and the thousands live their life!",
-		"hashtag": "Shibya"
+		"hashtag": "Shibya",
+		"used": false
 	},
 	"image-7.jpg": {
 		"text": "The view from the Park Hyatt Tokyo. Just done get lost in translation.",
-		"hashtag": "Tokyo"
+		"hashtag": "Tokyo",
+		"used": false
 	},
 	"image-8.jpg": {
 		"text": "The Morning calm over Shinjuku.",
-		"hashtag": "Tokyo"
+		"hashtag": "Tokyo",
+		"used": false
 	},
 	"image-9.jpg": {
 		"text": "Amsterdam is always a blast in the nines",
-		"hashtag": "Amsterdam"
+		"hashtag": "Amsterdam",
+		"used": false
 	},
 	"image-10.jpg": {
 		"text": "A stormy night in Paris",
-		"hashtag": "Paris"
+		"hashtag": "Paris",
+		"used": false
 	},
 	"image-11.jpg": {
 		"text": "The view of Mont Saint-Michel is always better from the beach... but only at low tide. lol",
-		"hashtag": "France"
+		"hashtag": "France",
+		"used": false
 	},
 	"image-12.jpg": {
 		"text": "Did someone say MOOOOOOooooo",
-		"hashtag": "Switzerland"
+		"hashtag": "Switzerland",
+		"used": false
 	},
 	"image-13.jpg": {
 		"text": "Ealry morning at Venice is always a treat.",
-		"hashtag": "Venice"
+		"hashtag": "Venice",
+		"used": false
 	},
 	"image-14.jpg": {
 		"text": "Florence is firenze. So naturally, it has to show off!",
-		"hashtag": "Florence"
+		"hashtag": "Florence",
+		"used": false
 	},
 	"image-15.jpg": {
 		"text": "Florence is just a magical place when the sun goes down",
-		"hashtag": "Florence"
+		"hashtag": "Florence",
+		"used": false
 	},
 	"image-16.jpg": {
 		"text": "Riomaggiore in Chitarra italy might be one of my all time favroite place in the world. having this view with only 8 other people was amazing.",
-		"hashtag": "Chitarra"
+		"hashtag": "Chitarra",
+		"used": false
 	},
 	"image-17.jpg": {
 		"text": "Stairway to hell. Well this one is found at the vatican of all places in the gift shop.",
-		"hashtag": "Vatican"
+		"hashtag": "Vatican",
+		"used": false
 	},
 	"image-18.jpg": {
 		"text": "What path are you taking tonight in Paris?",
-		"hashtag": "Paris"
+		"hashtag": "Paris",
+		"used": false
 	},
 	"image-19.jpg": {
 		"text": "Kyoto and the shining golden temple",
-		"hashtag": "Kyoto"
+		"hashtag": "Kyoto",
+		"used": false
 	},
 	"image-20.jpg": {
 		"text": "Fushimi Inari Shrine might have been one of the hardest shots to get. Even at 5am before everyone you still have a hard time getting 'the shot'.",
-		"hashtag": "Kyoto"
+		"hashtag": "Kyoto",
+		"used": false
 	},
 	"image-21.jpg": {
 		"text": "Arashiyama Bamboo Forest. One more amazing place... but only at 5am...IYKYK",
-		"hashtag": "Kyoto"
+		"hashtag": "Kyoto",
+		"used": false
 	},
 	"image-22.jpg": {
 		"text": "Maui and the turtle the dabbed",
-		"hashtag": "Maui"
+		"hashtag": "Maui",
+		"used": false
 	},
 	"image-23.jpg": {
 		"text": "Thors Well on the Oregon coast line is amazing. Dare i say Asgard like?",
-		"hashtag": "OregonCoast"
+		"hashtag": "OregonCoast",
+		"used": false
 	},
 	"image-24.jpg": {
 		"text": "One more amazing random views in Japan with Fuji in the background",
-		"hashtag": "Japan"
+		"hashtag": "Japan",
+		"used": false
 	},
 	"image-25.jpg": {
 		"text": "Seattle Skyline in the fall will always have a place in my heart",
-		"hashtag": "Seattle"
+		"hashtag": "Seattle",
+		"used": false
 	},
 	"image-26.jpg": {
 		"text": "Zion National Park. Just a random spot i think... IYKYK",
-		"hashtag": "Zion"
+		"hashtag": "Zion",
+		"used": false
 	},
 	"image-27.jpg": {
 		"text": "Keep Portland Weird",
-		"hashtag": "Portland"
+		"hashtag": "Portland",
+		"used": false
 	},
 	"image-28.jpg": {
 		"text": "Antelope Canyon is a place i could spend hours here.",
-		"hashtag": "AntelopeCanyon"
+		"hashtag": "AntelopeCanyon",
+		"used": false
 	},
 	"image-29.jpg": {
 		"text": "The Oregon coast that just keeps showing off.",
-		"hashtag": "OregonCoast"
+		"hashtag": "OregonCoast",
+		"used": false
 	},
 	"image-30.jpg": {
 		"text": "Here comes the fog. Diablo Lake in the early morning in the summer.",
-		"hashtag": "NorthCascades"
+		"hashtag": "NorthCascades",
+		"used": false
 	},
 	"image-31.jpg": {
 		"text": "Cannon beach and Haystack rock is just plan amazing",
-		"hashtag": "CannonBeach"
+		"hashtag": "CannonBeach",
+		"used": false
 	},
 	"image-32.jpg": {
 		"text": "Pike place Farmers market at night. Kinda cool but also kind rad!",
-		"hashtag": "Seattle"
+		"hashtag": "Seattle",
+		"used": false
 	},
 	"image-33.jpg": {
 		"text": "Who is ready for Christmas? Seattle space needle with the icon tree on top",
-		"hashtag": "Seattle"
+		"hashtag": "Seattle",
+		"used": false
 	},
 	"image-34.jpg": {
 		"text": "Maui and Hidden Beach. IYKYK",
-		"hashtag": "Maui"
+		"hashtag": "Maui",
+		"used": false
 	},
 	"image-35.jpg": {
 		"text": "LA and the icons.",
-		"hashtag": "LA"
+		"hashtag": "LA",
+		"used": false
 	},
 	"image-36.jpg": {
 		"text": "Diablo Lake and that amazing color. But do you see the paddle boarder?",
-		"hashtag": "NorthCascades"
+		"hashtag": "NorthCascades",
+		"used": false
 	},
 	"image-37.jpg": {
 		"text": "NYC and the fire escapes. I bet these have a story to tell",
-		"hashtag": "NYC"
+		"hashtag": "NYC",
+		"used": false
 	},
 	"image-38.jpg": {
 		"text": "The fog to take over NYC. sadly this is the best i could due on my last trip to NYC",
-		"hashtag": "NYC"
+		"hashtag": "NYC",
+		"used": false
 	},
 	"image-39.jpg": {
 		"text": "The Famous Protland Oregon sign.",
-		"hashtag": "PDX"
+		"hashtag": "PDX",
+		"used": false
 	},
 	"image-40.jpg": {
 		"text": "Bali and Ubud is still one of my Favorite places to go and just chill.",
-		"hashtag": "Bali"
+		"hashtag": "Bali",
+		"used": false
 	},
 	"image-41.jpg": {
 		"text": "Fall is still my favorite time of the year. Everything comes to life before the cold of winter.",
-		"hashtag": "FallColor"
+		"hashtag": "FallColor",
+		"used": false
 	},
 	"image-42.jpg": {
 		"text": "The Fall season is coming!",
-		"hashtag": "FallColor"
+		"hashtag": "FallColor",
+		"used": false
 	},
 	"image-43.jpg": {
 		"text": "the Eiffel Tower at Sunrise",
-		"hashtag": "Paris"
+		"hashtag": "Paris",
+		"used": false
 	},
 	"image-44.jpg": {
 		"text": "Greece and the iconic white houses and the burning sun over the med. what could you ask for more?",
-		"hashtag": "Santorini"
+		"hashtag": "Santorini",
+		"used": false
 	},
 	"image-45.jpg": {
 		"text": "Time to hit the tub. The snow monkey park in Jigokudani Yaen-Koen",
-		"hashtag": "Japan"
+		"hashtag": "Japan",
+		"used": false
 	},
 	"image-46.jpg": {
 		"text": "Never look back. Jigokudani Yaen-Koen with the snow monkeys",
-		"hashtag": "Japan"
+		"hashtag": "Japan",
+		"used": false
 	},
 	"image-47.jpg": {
 		"text": "Shibuya crossing and the never ending lights",
-		"hashtag": "Shibuya"
+		"hashtag": "Shibuya",
+		"used": false
 	}
 }
