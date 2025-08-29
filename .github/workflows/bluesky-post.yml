@@ -3,7 +3,7 @@ name: Bluesky Bot
 on:
   schedule:
     # Runs at 10am every day
-    - cron: "0 10 * * *"
+    - cron: "0 19 * * *"
   workflow_dispatch: # allows manual run
 
 jobs:
@@ -27,6 +27,7 @@ jobs:
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           node dist/blue_sky_bot.js
         continue-on-error: false # fail workflow if bot fails
