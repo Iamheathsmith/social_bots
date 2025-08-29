@@ -42,12 +42,12 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 	const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 	const prompt = `
-    Analyze this image and write a compelling and engaging tweet about it.
-    The post should include relevant hashtags and be less than 220 characters.
-    The tweet should be appropriate for a general audience and include 2 hashtags.
-	content and hashtags should be geared towards travel and photography.
-	ONLY return the caption and hashtags. Do NOT include any introductory text.
-  `;
+		Analyze this image and write a compelling and engaging tweet about it.
+		The post should include relevant hashtags and be less than 220 characters.
+		The tweet should be appropriate for a general audience and include 2 hashtags.
+		content and hashtags should be geared towards travel and photography.
+		ONLY return the caption and hashtags. Do NOT include any introductory text.
+  	`;
 
 	const image = fileToGenerativePart(imagePath, "image/jpeg");
 

@@ -3,7 +3,7 @@ name: Bluesky Bot
 on:
   schedule:
     # Runs at 10am every day
-    - cron: "0 19 * * *"
+    - cron: "0 17 * * *"
   workflow_dispatch: # allows manual run
 
 jobs:
