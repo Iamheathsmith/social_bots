@@ -13,6 +13,8 @@
 	"description": "",
 	"dependencies": {
 		"@atproto/api": "^0.16.2",
+		"@google/genai": "^1.0.0",
+		"@google/generative-ai": "^0.24.1",
 		"sharp": "^0.34.3",
 		"tlds": "^1.259.0",
 		"ts-node": "^10.9.2",

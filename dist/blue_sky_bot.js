@@ -3,32 +3,62 @@ import path from "path";
 import sharp from "sharp";
 import { AtpAgent } from "@atproto/api";
 import { fileURLToPath } from "url";
-import TLDs from "tlds" assert { type: "json" };
+import { GoogleGenerativeAI } from "@google/generative-ai";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // 🔑 Load creds from environment variables
-// const HANDLE = process.env.BLUESKY_HANDLE as string;
-// const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
-const HANDLE = "kr0nk.bsky.social";
-const APP_PASSWORD = "HoduDahee123";
-// --- 1. Init Bluesky client ---
+const HANDLE = process.env.BLUESKY_HANDLE;
+const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
+const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
+// --- 1. Init clients ---
 const agent = new AtpAgent({ service: "https://bsky.social" });
+// --- 2. Load JSON captions ---
+const captionsPath = path.join(__dirname, "captions.json");
+const captions = JSON.parse(fs.readFileSync(captionsPath, "utf8"));
+// --- 3. Helper for default caption ---
+const DEFAULT_CAPTION = "Enjoy this amazing image! #MorningMagic";
+// Initialize the Gemini client
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+// Encode a local image file to a Base64 string
+function fileToGenerativePart(path, mimeType) {
+    return {
+        inlineData: {
+            data: fs.readFileSync(path).toString("base64"),
+            mimeType,
+        },
+    };
+}
+async function generateTweetCaption(imagePath) {
+    // For the 'generateContent' method, use a model that supports images, such as 'gemini-1.5-flash'.
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `
+    Analyze this image and write a compelling and engaging tweet about it.
+    The post should include relevant hashtags and be less than 220 characters.
+    The tweet should be appropriate for a general audience and include 2 hashtags.
+	content and hashtags should be geared towards travel and photography.
+	ONLY return the caption and hashtags. Do NOT include any introductory text.
+  `;
+    const image = fileToGenerativePart(imagePath, "image/jpeg");
+    const result = await model.generateContent([prompt, image]);
+    if (result) {
+        return result.response.text();
+    }
+    else {
+        return DEFAULT_CAPTION;
+    }
+}
 async function runBot() {
-    // --- 2. Login ---
+    // --- 4. Login ---
     await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
-    // --- 3. Load JSON captions ---
-    const captions = JSON.parse(fs.readFileSync("captions.json", "utf8"));
-    // --- 4. Find unused images ---
-    const unusedImages = Object.keys(captions).filter((img) => !captions[img].used);
-    console.log("unusedImages:", unusedImages);
+    // --- 5. Find unused images ---
+    const unusedImages = Object.keys(captions).filter((img) => !captions[img]?.used);
     if (unusedImages.length === 0) {
         console.log("No unused images left.");
         return;
     }
-    // Pick a random unused image
     const randomFile = unusedImages[Math.floor(Math.random() * unusedImages.length)];
     const imagePath = path.join(__dirname, "images", randomFile);
-    // --- 5. Load image and resize to max 2000px ---
+    // --- 6. Process image ---
     let quality = 100;
     let processedBuffer;
     while (true) {
@@ -46,14 +76,11 @@ async function runBot() {
         quality -= 5;
     }
     const finalMetadata = await sharp(processedBuffer).metadata();
-    // --- 6. Get caption text + hashtag(s) ---
-    const captionData = captions[randomFile] || {};
-    let captionText = captionData?.text?.trim() || "Good morning! Hope you have a wonderful day!";
-    const hashtag = captionData?.hashtag?.trim() || "MorningMagic";
-    const finalText = `${captionText} #${hashtag}`;
-    // --- 7. Upload image to Bluesky ---
+    // --- 7. Generate caption & hashtags ---
+    const finalText = await generateTweetCaption(imagePath);
+    // --- 8. Upload image to Bluesky ---
     const uploadedImg = await agent.uploadBlob(processedBuffer, { encoding: "image/jpeg" });
-    // --- 8. Post with image and facets ---
+    // --- 9. Post with image and facets ---
     await agent.post({
         text: finalText,
         facets: detectFacets(new UnicodeString(finalText)),
@@ -71,8 +98,9 @@ async function runBot() {
             ],
         },
     });
-    // --- 10. Mark as used ---
+    // --- 10. Mark image as used ---
     captions[randomFile].used = true;
+    captions[randomFile].text = finalText;
     fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
     console.log(`Posted ${randomFile} with hashtags and updated captions.json.`);
 }
@@ -84,108 +112,37 @@ class UnicodeString {
         this.utf16 = utf16;
         this.utf8 = encoder.encode(utf16);
     }
-    // helper to convert utf16 code-unit offsets to utf8 code-unit offsets
     utf16IndexToUtf8Index(i) {
         return encoder.encode(this.utf16.slice(0, i)).byteLength;
     }
 }
 export function detectFacets(text) {
-    console.log("text: ", text);
-    let match;
     const facets = [];
-    {
-        // mentions
-        const re = /(^|\s|\()(@)([a-zA-Z0-9.-]+)(\b)/g;
-        while ((match = re.exec(text.utf16))) {
-            if (!isValidDomain(match[3]) && !match[3].endsWith(".test")) {
-                continue; // probably not a handle
-            }
-            const start = text.utf16.indexOf(match[3], match.index) - 1;
-            facets.push({
-                $type: "app.bsky.richtext.facet",
-                index: {
-                    byteStart: text.utf16IndexToUtf8Index(start),
-                    byteEnd: text.utf16IndexToUtf8Index(start + match[3].length + 1),
-                },
-                features: [
-                    {
-                        $type: "app.bsky.richtext.facet#mention",
-                        did: match[3], // must be resolved afterwards
-                    },
-                ],
-            });
-        }
+    let match;
+    // Mentions
+    const reMention = /(^|\s|\()(@)([a-zA-Z0-9.-]+)(\b)/g;
+    while ((match = reMention.exec(text.utf16))) {
+        const start = text.utf16.indexOf(match[3], match.index) - 1;
+        facets.push({
+            $type: "app.bsky.richtext.facet",
+            index: {
+                byteStart: text.utf16IndexToUtf8Index(start),
+                byteEnd: text.utf16IndexToUtf8Index(start + match[3].length + 1),
+            },
+            features: [{ $type: "app.bsky.richtext.facet#mention", did: match[3] }],
+        });
     }
-    {
-        // links
-        const re = /(^|\s|\()((https?:\/\/[\S]+)|((?<domain>[a-z][a-z0-9]*(\.[a-z0-9]+)+)[\S]*))/gim;
-        while ((match = re.exec(text.utf16))) {
-            let uri = match[2];
-            if (!uri.startsWith("http")) {
-                const domain = match.groups?.domain;
-                if (!domain || !isValidDomain(domain)) {
-                    continue;
-                }
-                uri = `https://${uri}`;
-            }
-            const start = text.utf16.indexOf(match[2], match.index);
-            const index = { start, end: start + match[2].length };
-            // strip ending puncuation
-            if (/[.,;!?]$/.test(uri)) {
-                uri = uri.slice(0, -1);
-                index.end--;
-            }
-            if (/[)]$/.test(uri) && !uri.includes("(")) {
-                uri = uri.slice(0, -1);
-                index.end--;
-            }
-            facets.push({
-                index: {
-                    byteStart: text.utf16IndexToUtf8Index(index.start),
-                    byteEnd: text.utf16IndexToUtf8Index(index.end),
-                },
-                features: [
-                    {
-                        $type: "app.bsky.richtext.facet#link",
-                        uri,
-                    },
-                ],
-            });
-        }
+    // Hashtags
+    const reTag = /(?:^|\s)(#[^\d\s]\S*)(?=\s)?/g;
+    while ((match = reTag.exec(text.utf16))) {
+        let tag = match[0].trim().replace(/\p{P}+$/gu, "");
+        if (tag.length > 66)
+            continue;
+        const index = match.index + (/^\s/.test(match[0]) ? 1 : 0);
+        facets.push({
+            index: { byteStart: text.utf16IndexToUtf8Index(index), byteEnd: text.utf16IndexToUtf8Index(index + tag.length) },
+            features: [{ $type: "app.bsky.richtext.facet#tag", tag: tag.replace(/^#/, "") }],
+        });
     }
-    {
-        const re = /(?:^|\s)(#[^\d\s]\S*)(?=\s)?/g;
-        while ((match = re.exec(text.utf16))) {
-            let [tag] = match;
-            const hasLeadingSpace = /^\s/.test(tag);
-            tag = tag.trim().replace(/\p{P}+$/gu, ""); // strip ending punctuation
-            // inclusive of #, max of 64 chars
-            if (tag.length > 66)
-                continue;
-            const index = match.index + (hasLeadingSpace ? 1 : 0);
-            facets.push({
-                index: {
-                    byteStart: text.utf16IndexToUtf8Index(index),
-                    byteEnd: text.utf16IndexToUtf8Index(index + tag.length), // inclusive of last char
-                },
-                features: [
-                    {
-                        $type: "app.bsky.richtext.facet#tag",
-                        tag: tag.replace(/^#/, ""),
-                    },
-                ],
-            });
-        }
-    }
-    console.log("facets: ", facets);
     return facets.length > 0 ? facets : undefined;
-}
-function isValidDomain(str) {
-    return !!TLDs.find((tld) => {
-        const i = str.lastIndexOf(tld);
-        if (i === -1) {
-            return false;
-        }
-        return str.charAt(i - 1) === "." && i === str.length - tld.length;
-    });
 }
