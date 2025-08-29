@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 // 🔑 Load creds from environment variables
 const HANDLE = process.env.BLUESKY_HANDLE;
 const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
-const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 // --- 1. Init clients ---
 const agent = new AtpAgent({ service: "https://bsky.social" });
 // --- 2. Load JSON captions ---
