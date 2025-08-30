@@ -37,13 +37,13 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 	const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 	const prompt = `
-		Analyze this image and write a compelling and engaging tweet about it.
-		The post should include relevant hashtags and be less than 290 characters(including spaces).
-		The tweet should be appropriate for a general audience and include 3 hashtags.
-		do not include any icons or emojis.
-		50% of the time, try pose the caption as a question to boost engagement. but keep it natural.
-		content and hashtags should be geared towards travel and photography.
-		ONLY return the caption and hashtags. Do NOT include any introductory text.
+		Analyze this image and write a tweet that is compelling, natural, and engaging. 
+		The tweet must be less than 290 characters (including spaces), 
+		appropriate for a general audience, and include exactly 3 relevant hashtags focused on travel and photography (but not #TravelPhotography or overly generic tags). 
+		Avoid emojis and icons. 
+		About half the time, phrase the caption as a question to encourage engagement. 
+		Use descriptive and emotional language that evokes curiosity or wonder about the scene, and make it specific to this image. 
+		Return only the tweet text with hashtags, with no extra commentary.
   	`;
 
 	const image = fileToGenerativePart(imagePath, "image/jpeg");
