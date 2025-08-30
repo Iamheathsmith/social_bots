@@ -31,18 +31,18 @@ jobs:
         run: |
           node dist/src/blue_sky_bot.js
 
-      - name: Commit posted images (if any)
-        if: success()  # only run if bot succeeded
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Move posted image
+        if: ${{ success() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-            # Check if any new files in posted folder
-            git add posted/*
-            git diff --cached --quiet || git commit -m "Move posted images" 
-            
-            # Push back to main
-            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-            git push origin HEAD:refs/heads/main
+          # Check if any new files in posted folder
+          git add posted/*
+          git diff --cached --quiet || git commit -m "Move posted images" 
+
+          # Push back to main
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin HEAD:refs/heads/main
