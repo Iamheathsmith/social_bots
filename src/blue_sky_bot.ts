@@ -41,7 +41,7 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 		The post should include relevant hashtags and be less than 290 characters(including spaces).
 		The tweet should be appropriate for a general audience and include 3 hashtags.
 		do not include any icons or emojis.
-		try and pose the caption as a question to boost engagement.
+		50% of the time, try pose the caption as a question to boost engagement. but keep it natural.
 		content and hashtags should be geared towards travel and photography.
 		ONLY return the caption and hashtags. Do NOT include any introductory text.
   	`;
