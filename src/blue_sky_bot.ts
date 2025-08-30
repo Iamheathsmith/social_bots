@@ -39,7 +39,9 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 	const prompt = `
 		Analyze this image and write a compelling and engaging tweet about it.
 		The post should include relevant hashtags and be less than 220 characters.
-		The tweet should be appropriate for a general audience and include 2 hashtags.
+		The tweet should be appropriate for a general audience and include 2 hashtags.|
+		do not include any icons or emojis.
+		try and pose the caption as a question to boost engagement.
 		content and hashtags should be geared towards travel and photography.
 		ONLY return the caption and hashtags. Do NOT include any introductory text.
   	`;
@@ -60,9 +62,8 @@ async function runBot() {
 	await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
 
 	// --- 5. Find images in images/ folder ---
-	const projectRoot = path.resolve(__dirname, "../../");
-	const imagesDir = path.join(projectRoot, "images");
-	const postedDir = path.join(projectRoot, "posted");
+	const imagesDir = path.join(process.cwd(), "src/images");
+	const postedDir = path.join(process.cwd(), "src/posted");
 	if (!fs.existsSync(postedDir)) {
 		fs.mkdirSync(postedDir);
 	}
