@@ -1,28 +1,27 @@
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-import { AtpAgent, AppBskyRichtextFacet } from "@atproto/api";
+import { AtpAgent } from "@atproto/api";
 import { fileURLToPath } from "url";
-import TLDs from "tlds" assert { type: "json" };
+import { detectFacets, UnicodeString } from "./helpers.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const DEFAULT_CAPTION = "Enjoy this amazing image! #MorningMagic";
+
 // 🔑 Load creds from environment variables
-const HANDLE = process.env.BLUESKY_HANDLE as string;
-const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY as string;
+// const HANDLE = process.env.BLUESKY_HANDLE as string;
+// const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
+// const GEMINI_API_KEY = process.env.GEMINI_API_KEY as string;
+
+const HANDLE = "kr0nk.bsky.social";
+const APP_PASSWORD = "HoduDahee123";
+const GEMINI_API_KEY = "AIzaSyDM4kK-hDR6tbBA0RrgmASOdAu0BUrjCyk";
 
 // --- 1. Init clients ---
 const agent = new AtpAgent({ service: "https://bsky.social" });
-
-// --- 2. Load JSON captions ---
-const captionsPath = path.join(__dirname, "captions.json");
-const captions = JSON.parse(fs.readFileSync(captionsPath, "utf8"));
-
-// --- 3. Helper for default caption ---
-const DEFAULT_CAPTION = "Enjoy this amazing image! #MorningMagic";
 
 // Initialize the Gemini client
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -61,18 +60,24 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 }
 
 async function runBot() {
-	// --- 4. Login ---
+	console.log("Logging in...", HANDLE, APP_PASSWORD);
 	await agent.login({ identifier: HANDLE, password: APP_PASSWORD });
 
-	// --- 5. Find unused images ---
-	const unusedImages = Object.keys(captions).filter((img) => !captions[img]?.used);
-	if (unusedImages.length === 0) {
-		console.log("No unused images left.");
+	// --- 5. Find images in images/ folder ---
+	const projectRoot = path.resolve(__dirname, "../../");
+	const imagesDir = path.join(projectRoot, "images");
+	const postedDir = path.join(projectRoot, "posted");
+	if (!fs.existsSync(postedDir)) {
+		fs.mkdirSync(postedDir);
+	}
+	const files = fs.readdirSync(imagesDir).filter((f) => !f.startsWith("."));
+
+	if (files.length === 0) {
+		console.log("No images found in images/");
 		return;
 	}
-
-	const randomFile = unusedImages[Math.floor(Math.random() * unusedImages.length)];
-	const imagePath = path.join(__dirname, "images", randomFile);
+	const randomFile = files[Math.floor(Math.random() * files.length)];
+	const imagePath = path.join(imagesDir, randomFile);
 
 	// --- 6. Process image ---
 	let quality = 100;
@@ -122,64 +127,10 @@ async function runBot() {
 		},
 	});
 
-	// --- 10. Mark image as used ---
-
-	captions[randomFile].used = true;
-	captions[randomFile].text = finalText;
-	fs.writeFileSync("captions.json", JSON.stringify(captions, null, 2));
-	console.log(`Posted ${randomFile} with hashtags and updated captions.json.`);
+	// --- 10. Move image to posted/ ---
+	const newPath = path.join(postedDir, randomFile);
+	fs.renameSync(imagePath, newPath);
+	console.log(`Posted ${randomFile} and moved to posted/ folder.`);
 }
 
 runBot().catch(console.error);
-
-// ---------- Helpers (facets detection) ----------
-type Facet = AppBskyRichtextFacet.Main;
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-
-class UnicodeString {
-	utf16: string;
-	utf8: Uint8Array;
-
-	constructor(utf16: string) {
-		this.utf16 = utf16;
-		this.utf8 = encoder.encode(utf16);
-	}
-
-	utf16IndexToUtf8Index(i: number) {
-		return encoder.encode(this.utf16.slice(0, i)).byteLength;
-	}
-}
-
-export function detectFacets(text: UnicodeString): Facet[] | undefined {
-	const facets: Facet[] = [];
-	let match;
-
-	// Mentions
-	const reMention = /(^|\s|\()(@)([a-zA-Z0-9.-]+)(\b)/g;
-	while ((match = reMention.exec(text.utf16))) {
-		const start = text.utf16.indexOf(match[3], match.index) - 1;
-		facets.push({
-			$type: "app.bsky.richtext.facet",
-			index: {
-				byteStart: text.utf16IndexToUtf8Index(start),
-				byteEnd: text.utf16IndexToUtf8Index(start + match[3].length + 1),
-			},
-			features: [{ $type: "app.bsky.richtext.facet#mention", did: match[3] }],
-		});
-	}
-
-	// Hashtags
-	const reTag = /(?:^|\s)(#[^\d\s]\S*)(?=\s)?/g;
-	while ((match = reTag.exec(text.utf16))) {
-		let tag = match[0].trim().replace(/\p{P}+$/gu, "");
-		if (tag.length > 66) continue;
-		const index = match.index + (/^\s/.test(match[0]) ? 1 : 0);
-		facets.push({
-			index: { byteStart: text.utf16IndexToUtf8Index(index), byteEnd: text.utf16IndexToUtf8Index(index + tag.length) },
-			features: [{ $type: "app.bsky.richtext.facet#tag", tag: tag.replace(/^#/, "") }],
-		});
-	}
-
-	return facets.length > 0 ? facets : undefined;
-}

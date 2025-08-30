@@ -1,4 +1,4 @@
-import TLDs from "tlds";
+import tlds from "tlds/index.json" with { type: "json" };
 import { AppBskyRichtextFacet } from "@atproto/api";
 
 type Facet = AppBskyRichtextFacet.Main;
@@ -118,7 +118,7 @@ export function detectFacets(text: UnicodeString): Facet[] | undefined {
 }
 
 function isValidDomain(str: string): boolean {
-	return !!TLDs.find((tld) => {
+	return !!tlds.find((tld) => {
 		const i = str.lastIndexOf(tld);
 		if (i === -1) {
 			return false;

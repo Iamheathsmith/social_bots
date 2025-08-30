@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "node dist/blue_sky_bot.js",
+		"start": "node dist/src/blue_sky_bot.js",
 		"dev": "ts-node blue_sky_bot.ts"
 	},
 	"keywords": [],
@@ -12,7 +12,7 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
-		"@atproto/api": "^0.16.2",
+		"@atproto/api": "^0.16.6",
 		"@google/genai": "^1.0.0",
 		"@google/generative-ai": "^0.24.1",
 		"sharp": "^0.34.3",
