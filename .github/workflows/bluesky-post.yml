@@ -40,18 +40,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Ensure posted folder exists
-          mkdir -p src/posted
+          # Commit if bot moved any images
+          git add src/posted/* || true
+          git diff --cached --quiet || git commit -m "Move posted image"
 
-          # Move images from src/images to src/posted
-          if ls src/images/* 1> /dev/null 2>&1; then
-            mv src/images/* src/posted/
-          fi
-
-          # Commit changes if there are any
-          git add src/posted/*
-          git diff --cached --quiet || git commit -m "Move posted images"
-
-          # Push back to main (force in case of conflicts)
+          # Push back to main
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
-          git push origin HEAD:refs/heads/main --force
+          git push origin HEAD:refs/heads/main
