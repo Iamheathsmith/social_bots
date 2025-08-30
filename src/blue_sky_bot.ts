@@ -125,9 +125,14 @@ async function runBot() {
 	});
 
 	// --- 10. Move image to posted/ ---
-	const newPath = path.join(postedDir, randomFile);
-	fs.renameSync(imagePath, newPath);
-	console.log(`Posted ${randomFile} and moved to posted/ folder.`);
+	function moveImageToPosted(filename: string) {
+		const oldPath = path.join(imagesDir, filename);
+		const newPath = path.join(postedDir, filename);
+
+		fs.renameSync(oldPath, newPath);
+		console.log(`Moved ${filename} → posted`);
+	}
+	moveImageToPosted(randomFile);
 }
 
 runBot().catch(console.error);
