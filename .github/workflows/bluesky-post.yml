@@ -2,56 +2,46 @@ name: Bluesky Bot
 
 on:
   schedule:
-    # Runs at 10am every day (17:00 UTC)
-    - cron: "0 17 * * *"
-  workflow_dispatch: # allows manual run
+    - cron: "0 */6 * * *" # every 6 hours
+  workflow_dispatch:
 
 jobs:
-  post-image:
+  post-to-bluesky:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Run Bluesky Bot
-        id: runbot
+      - name: Build
+        run: npm run build
+
+      - name: Run bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          node dist/src/blue_sky_bot.js
-        continue-on-error: false # fail workflow if bot fails
+        run: node dist/src/blue_sky_bot.js
 
-      - name: Commit moved images (only if bot succeeded)
-        if: ${{ success() }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit moved image
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Ensure posted folder exists
-          mkdir -p src/posted
+          # Stage posted image(s) if any were moved
+          git add src/posted/* || true
+          git diff --cached --quiet || git commit -m "Move posted image"
 
-          # Move images from src/images to src/posted
-          if ls src/images/* 1> /dev/null 2>&1; then
-            mv src/images/* src/posted/
-          fi
-
-          # Commit changes if there are any
-          git add src/posted/*
-          git diff --cached --quiet || git commit -m "Move posted images"
-
-          # Push back to main (force in case of conflicts)
+          # Push changes
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
-          git push origin HEAD:refs/heads/main --force
+          git push origin HEAD:refs/heads/main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -38,8 +38,8 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 
 	const prompt = `
 		Analyze this image and write a compelling and engaging tweet about it.
-		The post should include relevant hashtags and be less than 220 characters.
-		The tweet should be appropriate for a general audience and include 2 hashtags.|
+		The post should include relevant hashtags and be less than 290 characters(including spaces).
+		The tweet should be appropriate for a general audience and include 3 hashtags.
 		do not include any icons or emojis.
 		try and pose the caption as a question to boost engagement.
 		content and hashtags should be geared towards travel and photography.
