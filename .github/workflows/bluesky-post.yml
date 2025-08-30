@@ -2,9 +2,9 @@ name: Bluesky Bot
 
 on:
   schedule:
-    # Runs at 10am every day
+    # Runs at 10am UTC every day (adjust if needed)
     - cron: "0 17 * * *"
-  workflow_dispatch: # allows manual run
+  workflow_dispatch:
 
 jobs:
   post-image:
@@ -30,16 +30,24 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           node dist/src/blue_sky_bot.js
-        continue-on-error: false # fail workflow if bot fails
 
-      - name: Commit used images (only if bot succeeded)
+      - name: Move posted image
         if: ${{ success() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add captions.json
-          git diff --cached --quiet || git commit -m "Update captions.json (mark used images)"
+
+          # Move the last posted image to posted/
+          LAST_IMAGE=$(node -pe "require('./dist/src/blue_sky_bot.js').LAST_IMAGE || ''")
+          if [ -n "$LAST_IMAGE" ]; then
+            mkdir -p posted
+            mv "images/$LAST_IMAGE" posted/
+          fi
+
+          # Commit and push the moved image
+          git add posted/
+          git diff --cached --quiet || git commit -m "Move $LAST_IMAGE to posted"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
           git push origin HEAD:refs/heads/main
