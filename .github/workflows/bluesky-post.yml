@@ -31,7 +31,7 @@ jobs:
         run: |
           node dist/src/blue_sky_bot.js
 
-      - name: Move posted image
+      - name: Commit and move posted image
         if: ${{ success() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,10 +39,16 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Check if any new files in posted folder
-          git add posted/*
-          git diff --cached --quiet || git commit -m "Move posted images" 
+          # Ensure posted folder exists in src
+          mkdir -p src/posted
 
-          # Push back to main
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-          git push origin HEAD:refs/heads/main
+          # Move images from src/images to src/posted
+          mv src/images/* src/posted/
+
+          # Commit changes if there are any
+          git add src/posted/*
+          git diff --cached --quiet || git commit -m "Move posted images"
+
+          # Force push changes to main
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
+          git push origin HEAD:refs/heads/main --force
