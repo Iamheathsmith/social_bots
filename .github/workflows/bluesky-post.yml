@@ -2,9 +2,9 @@ name: Bluesky Bot
 
 on:
   schedule:
-    # Runs at 10am UTC every day (adjust if needed)
+    # Runs at 10am every day (17:00 UTC)
     - cron: "0 17 * * *"
-  workflow_dispatch:
+  workflow_dispatch: # allows manual run
 
 jobs:
   post-image:
@@ -30,8 +30,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           node dist/src/blue_sky_bot.js
+        continue-on-error: false # fail workflow if bot fails
 
-      - name: Commit and move posted image
+      - name: Commit moved images (only if bot succeeded)
         if: ${{ success() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,16 +40,18 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Ensure posted folder exists in src
+          # Ensure posted folder exists
           mkdir -p src/posted
 
           # Move images from src/images to src/posted
-          mv src/images/* src/posted/
+          if ls src/images/* 1> /dev/null 2>&1; then
+            mv src/images/* src/posted/
+          fi
 
           # Commit changes if there are any
           git add src/posted/*
           git diff --cached --quiet || git commit -m "Move posted images"
 
-          # Force push changes to main
+          # Push back to main (force in case of conflicts)
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
           git push origin HEAD:refs/heads/main --force
