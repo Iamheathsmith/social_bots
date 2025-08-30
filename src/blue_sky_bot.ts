@@ -38,7 +38,7 @@ async function generateTweetCaption(imagePath: string): Promise<string> {
 
 	const prompt = `
 		Analyze this image and write a tweet that is compelling, natural, and engaging. 
-		The tweet must be less than 290 characters (including spaces), 
+		The tweet must be less than 290 characters (including spaces), but try to make it as long as possible while still being concise, 
 		appropriate for a general audience, and include exactly 3 relevant hashtags focused on travel and photography (but not #TravelPhotography or overly generic tags). 
 		Avoid emojis and icons. 
 		About half the time, phrase the caption as a question to encourage engagement. 
