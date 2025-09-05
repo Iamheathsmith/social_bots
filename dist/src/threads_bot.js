@@ -1,31 +1,51 @@
-import fs from "fs";
 import axios from "axios";
-import FormData from "form-data";
-import dotenv from "dotenv";
-dotenv.config();
-const THREADS_API_URL = "https://graph.facebook.com/v18.0/me/media"; // Replace with actual Threads endpoint
-const ACCESS_TOKEN = process.env.THREADS_ACCESS_TOKEN;
+import { v2 as cloudinary } from "cloudinary";
+const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN;
+const THREADS_USER_ID = process.env.THREADS_ACCESS_TOKEN;
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+cloudinary.config({
+    cloud_name: CLOUDINARY_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
+});
 /**
- * Post an image with text to Threads
- * @param imagePath Path to the local image
- * @param text Caption + hashtags to post
+ * Posts a local image to Threads via Cloudinary and the Threads API.
  */
 export async function postThread(imagePath, text) {
-    if (!fs.existsSync(imagePath)) {
-        console.error("Image not found:", imagePath);
-        return;
-    }
-    const form = new FormData();
-    form.append("caption", text);
-    form.append("file", fs.createReadStream(imagePath));
     try {
-        const res = await axios.post(THREADS_API_URL, form, {
+        // Step 1: Upload to Cloudinary
+        console.log("Uploading image to Cloudinary...");
+        const result = await cloudinary.uploader.upload(imagePath, { folder: "threads_uploads" });
+        const imageUrl = result.secure_url;
+        console.log("Image uploaded to Cloudinary:", imageUrl);
+        // Step 2: Create media container
+        console.log("Creating Threads media container...");
+        const createRes = await axios.post(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads`, {
+            media_type: "IMAGE",
+            image_url: imageUrl,
+            text: text,
+        }, {
             headers: {
-                ...form.getHeaders(),
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
+                Authorization: `Bearer ${THREADS_TOKEN}`,
+                "Content-Type": "application/json",
             },
         });
-        console.log("Posted successfully:", res.data);
+        const creationId = createRes.data.id;
+        if (!creationId)
+            throw new Error("No creation ID returned from Threads API");
+        console.log(`Media container created with ID: ${creationId}`);
+        console.log("Waiting 30 seconds before publishing...");
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+        // Step 3: Publish media container
+        const publishRes = await axios.post(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads_publish`, { creation_id: creationId }, {
+            headers: {
+                Authorization: `Bearer ${THREADS_TOKEN}`,
+                "Content-Type": "application/json",
+            },
+        });
+        console.log("Posted successfully:", publishRes.data);
     }
     catch (err) {
         console.error("Error posting image:", err.response?.data || err.message);

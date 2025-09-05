@@ -1,8 +1,11 @@
 import path from "path";
 import fs from "fs";
+import { postThread } from "./threads_bot.js";
 import sharp from "sharp";
 import { generateTweetCaption } from "./generate_text_caption.js";
 import { postToBlueSky } from "./bluesky_bot.js";
+import dotenv from "dotenv";
+dotenv.config();
 async function main() {
     // --- 1. Find images in images/folder ---
     const imagesDir = path.join(process.cwd(), "src/images");
@@ -36,6 +39,14 @@ async function main() {
     }
     const captionAndHashTags = await generateTweetCaption(imagePath);
     await postToBlueSky(captionAndHashTags, processedBuffer);
-    // await postThread(imagePath, captionAndHashTags);
+    await postThread(imagePath, captionAndHashTags);
+    // --- 3. Move image to posted/ folder ---
+    function moveImageToPosted(filename) {
+        const oldPath = path.join(imagesDir, filename);
+        const newPath = path.join(postedDir, filename);
+        fs.renameSync(oldPath, newPath);
+        console.log(`Moved ${filename} → posted`);
+    }
+    moveImageToPosted(randomFile);
 }
 main().catch(console.error);
