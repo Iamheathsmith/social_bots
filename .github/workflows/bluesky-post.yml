@@ -57,38 +57,12 @@ jobs:
           CI: true
         run: node dist/src/run_soical_bots.js
 
-      - name: Move successfully posted images
-        run: |
-          node -e "
-          const fs = require('fs');
-          const path = require('path');
-          const postedFile = path.join(__dirname, 'src/posted_list.json'); // file your bot writes
-          const imagesDir = path.join(__dirname, 'src/images');
-          const postedDir = path.join(__dirname, 'src/posted');
-
-          if (!fs.existsSync(postedDir)) fs.mkdirSync(postedDir);
-
-          if (fs.existsSync(postedFile)) {
-            const postedImages = JSON.parse(fs.readFileSync(postedFile, 'utf-8'));
-            postedImages.forEach(file => {
-              const oldPath = path.join(imagesDir, file);
-              const newPath = path.join(postedDir, file);
-              if (fs.existsSync(oldPath)) {
-                fs.renameSync(oldPath, newPath);
-                console.log('Moved', file, '→ posted');
-              }
-            });
-            fs.unlinkSync(postedFile); // clean up the list
-          } else {
-            console.log('No images to move.');
-          }
-          "
-
       - name: Commit moved images
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Only commit if files in src/posted/ changed
           git add src/posted/* || true
           git diff --cached --quiet || git commit -m "Move posted images"
 
