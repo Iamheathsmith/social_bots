@@ -24,12 +24,32 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug env vars (safe check)
+        run: |
+          echo "BLUESKY_HANDLE: ${BLUESKY_HANDLE:-❌ Missing}"
+          echo "BLUESKY_APP_PASSWORD: ${BLUESKY_APP_PASSWORD:+✅ Loaded}"
+          echo "THREADS_USER_ID: ${THREADS_USER_ID:-❌ Missing}"
+          echo "THREADS_ACCESS_TOKEN: ${THREADS_ACCESS_TOKEN:+✅ Loaded}"
+          echo "CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-❌ Missing}"
+          echo "CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:+✅ Loaded}"
+          echo "CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:+✅ Loaded}"
+          echo "GEMINI_API_KEY: ${GEMINI_API_KEY:+✅ Loaded}"
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+
       - name: Run bot
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
           THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
@@ -62,6 +82,7 @@ jobs:
           } else {
             console.log('No images to move.');
           }
+          "
 
       - name: Commit moved images
         run: |

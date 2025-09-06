@@ -1,6 +1,6 @@
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
-const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN;
+const THREADS_ACCESS_TOKEN = process.env.THREADS_ACCESS_TOKEN;
 const THREADS_USER_ID = process.env.THREADS_USER_ID;
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -27,7 +27,7 @@ export async function postThread(imagePath, text) {
             text: text || " ",
         }, {
             headers: {
-                Authorization: `Bearer ${THREADS_TOKEN}`,
+                Authorization: `Bearer ${THREADS_ACCESS_TOKEN}`,
                 "Content-Type": "application/json",
             },
         });
@@ -40,7 +40,7 @@ export async function postThread(imagePath, text) {
         // Step 3: Publish media container
         const publishRes = await axios.post(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads_publish`, { creation_id: creationId }, {
             headers: {
-                Authorization: `Bearer ${THREADS_TOKEN}`,
+                Authorization: `Bearer ${THREADS_ACCESS_TOKEN}`,
                 "Content-Type": "application/json",
             },
         });

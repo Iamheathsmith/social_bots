@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 
-const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN as string;
+const THREADS_ACCESS_TOKEN = process.env.THREADS_ACCESS_TOKEN as string;
 const THREADS_USER_ID = process.env.THREADS_USER_ID as string;
 
 cloudinary.config({
@@ -34,7 +34,7 @@ export async function postThread(imagePath: string, text: string) {
 			},
 			{
 				headers: {
-					Authorization: `Bearer ${THREADS_TOKEN}`,
+					Authorization: `Bearer ${THREADS_ACCESS_TOKEN}`,
 					"Content-Type": "application/json",
 				},
 			}
@@ -53,7 +53,7 @@ export async function postThread(imagePath: string, text: string) {
 			{ creation_id: creationId },
 			{
 				headers: {
-					Authorization: `Bearer ${THREADS_TOKEN}`,
+					Authorization: `Bearer ${THREADS_ACCESS_TOKEN}`,
 					"Content-Type": "application/json",
 				},
 			}
