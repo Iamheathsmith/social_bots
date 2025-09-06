@@ -62,7 +62,6 @@ jobs:
           } else {
             console.log('No images to move.');
           }
-          "
 
       - name: Commit moved images
         run: |

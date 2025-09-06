@@ -18,7 +18,7 @@ export async function postThread(imagePath: string, text: string) {
 		// Step 1: Upload to Cloudinary
 		console.log("Uploading image to Cloudinary...");
 		const result = await cloudinary.uploader.upload(imagePath, { folder: "threads_uploads" });
-		const imageUrl = result.secure_url;
+		const imageUrl = result.url;
 		console.log("Image uploaded to Cloudinary:", imageUrl);
 
 		console.log("Waiting 30 seconds before Creating...");
