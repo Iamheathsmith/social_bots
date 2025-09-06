@@ -5,8 +5,10 @@ import sharp from "sharp";
 import { generateTweetCaption } from "./generate_text_caption.js";
 import { postToBlueSky } from "./bluesky_bot.js";
 import dotenv from "dotenv";
-dotenv.config();
 async function main() {
+    if (!process.env.CI) {
+        dotenv.config();
+    }
     // --- 1. Find images in images/folder ---
     const imagesDir = path.join(process.cwd(), "src/images");
     const postedDir = path.join(process.cwd(), "src/posted");
