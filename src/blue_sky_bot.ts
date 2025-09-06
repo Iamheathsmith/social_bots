@@ -6,6 +6,12 @@ import { fileURLToPath } from "url";
 import { detectFacets, UnicodeString } from "./helpers.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+import dotenv from "dotenv";
+
+if (!process.env.CI) {
+	dotenv.config();
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
