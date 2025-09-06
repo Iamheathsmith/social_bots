@@ -1,5 +1,7 @@
 import path from "path";
 import fs from "fs";
+import "./config.js";
+
 import { postThread } from "./threads_bot.js";
 import sharp from "sharp";
 import { generateTweetCaption } from "./generate_text_caption.js";

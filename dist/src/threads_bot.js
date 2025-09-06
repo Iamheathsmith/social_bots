@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN;
-const THREADS_USER_ID = process.env.THREADS_ACCESS_TOKEN;
+const THREADS_USER_ID = process.env.THREADS_USER_ID;
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -24,7 +24,7 @@ export async function postThread(imagePath, text) {
         const createRes = await axios.post(`https://graph.threads.net/v1.0/${THREADS_USER_ID}/threads`, {
             media_type: "IMAGE",
             image_url: imageUrl,
-            text: text,
+            text: text || " ",
         }, {
             headers: {
                 Authorization: `Bearer ${THREADS_TOKEN}`,

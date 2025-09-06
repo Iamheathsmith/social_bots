@@ -2,7 +2,7 @@ import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 
 const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN as string;
-const THREADS_USER_ID = process.env.THREADS_ACCESS_TOKEN as string;
+const THREADS_USER_ID = process.env.THREADS_USER_ID as string;
 
 cloudinary.config({
 	cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
@@ -18,7 +18,7 @@ export async function postThread(imagePath: string, text: string) {
 		// Step 1: Upload to Cloudinary
 		console.log("Uploading image to Cloudinary...");
 		const result = await cloudinary.uploader.upload(imagePath, { folder: "threads_uploads" });
-		const imageUrl = result.url;
+		const imageUrl = result.secure_url;
 		console.log("Image uploaded to Cloudinary:", imageUrl);
 
 		console.log("Waiting 30 seconds before Creating...");
@@ -30,7 +30,7 @@ export async function postThread(imagePath: string, text: string) {
 			{
 				media_type: "IMAGE",
 				image_url: imageUrl,
-				text: text,
+				text: text || " ",
 			},
 			{
 				headers: {

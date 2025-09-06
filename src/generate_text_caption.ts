@@ -5,6 +5,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY as string;
 const DEFAULT_CAPTION = "Enjoy this amazing image! #MorningMagic";
 
 // Initialize the Gemini client
+console.log("GEMINI_API_KEY =", process.env.GEMINI_API_KEY);
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 // Encode a local image file to a Base64 string
