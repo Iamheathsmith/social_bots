@@ -5,9 +5,9 @@ const THREADS_TOKEN = process.env.THREADS_ACCESS_TOKEN as string;
 const THREADS_USER_ID = process.env.THREADS_ACCESS_TOKEN as string;
 
 cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET,
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
+	api_key: process.env.CLOUDINARY_API_KEY as string,
+	api_secret: process.env.CLOUDINARY_API_SECRET as string,
 });
 
 /**
