@@ -1,9 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from "fs";
-import dotenv from "dotenv";
-if (!process.env.CI) {
-    dotenv.config();
-}
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const DEFAULT_CAPTION = "Enjoy this amazing image! #MorningMagic";
 // Initialize the Gemini client

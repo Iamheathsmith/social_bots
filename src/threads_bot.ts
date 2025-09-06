@@ -21,6 +21,8 @@ export async function postThread(imagePath: string, text: string) {
 		const imageUrl = result.secure_url;
 		console.log("Image uploaded to Cloudinary:", imageUrl);
 
+		console.log("Waiting 30 seconds before Creating...");
+		await new Promise((resolve) => setTimeout(resolve, 30000));
 		// Step 2: Create media container
 		console.log("Creating Threads media container...");
 		const createRes = await axios.post(

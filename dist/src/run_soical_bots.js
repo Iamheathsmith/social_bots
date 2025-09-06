@@ -4,10 +4,6 @@ import { postThread } from "./threads_bot.js";
 import sharp from "sharp";
 import { generateTweetCaption } from "./generate_text_caption.js";
 import { postToBlueSky } from "./bluesky_bot.js";
-import dotenv from "dotenv";
-if (!process.env.CI) {
-    dotenv.config();
-}
 async function main() {
     // --- 1. Find images in images/folder ---
     const imagesDir = path.join(process.cwd(), "src/images");
