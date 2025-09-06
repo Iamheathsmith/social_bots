@@ -40,7 +40,7 @@ jobs:
       - name: Move successfully posted images
         run: |
           node -e "
-          const fs = require('fs');git s
+          const fs = require('fs');
           const path = require('path');
           const postedFile = path.join(__dirname, 'src/posted_list.json'); // file your bot writes
           const imagesDir = path.join(__dirname, 'src/images');
