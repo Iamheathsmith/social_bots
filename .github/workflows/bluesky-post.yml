@@ -2,7 +2,7 @@ name: Bluesky Bot
 
 on:
   schedule:
-    - cron: "0 17 * * *" # every 6 hours
+    - cron: "0 17 * * *" # every day at 17:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -62,8 +62,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Only commit if files in src/posted/ changed
-          git add src/posted/* || true
+          # Stage both posted and images folder changes
+          git add src/posted/* src/images/* || true
           git diff --cached --quiet || git commit -m "Move posted images"
 
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/Iamheathsmith/blue_sky_bot.git
