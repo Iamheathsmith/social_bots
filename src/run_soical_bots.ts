@@ -53,7 +53,7 @@ async function main() {
 	}
 
 	await postToBlueSky(captionAndHashTags, processedBuffer);
-	await postThread(imagePath, captionAndHashTags);
+	await postThread(processedBuffer, captionAndHashTags);
 
 	// --- 3. Move image to posted/ folder ---
 	function moveImageToPosted(filename: string) {

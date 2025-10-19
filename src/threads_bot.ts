@@ -14,13 +14,18 @@ cloudinary.config({
 /**
  * Posts a local image to Threads via Cloudinary and the Threads API.
  */
-export async function postThread(imagePath: string, text: string) {
+export async function postThread(imageBuffer: Buffer, text: string) {
 	try {
 		// Step 1: Upload to Cloudinary
-		console.log("Uploading image to Cloudinary...");
-		const result = await cloudinary.uploader.upload(imagePath, { folder: "threads_uploads" });
+		console.log("Uploading image buffer to Cloudinary...");
+		const result = await new Promise<any>((resolve, reject) => {
+			const stream = cloudinary.uploader.upload_stream({ folder: "threads_uploads" }, (error, result) =>
+				error ? reject(error) : resolve(result)
+			);
+			stream.end(imageBuffer);
+		});
 		const imageUrl = result.secure_url;
-		console.log("Image uploaded to Cloudinary:", imageUrl);
+		console.log("Image buffer uploaded to Cloudinary:", imageUrl);
 
 		console.log("Waiting 30 seconds before Creating...");
 		await new Promise((resolve) => setTimeout(resolve, 30000));
