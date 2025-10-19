@@ -6,6 +6,7 @@
 		"watch": "tsc --watch",
 		"build": "tsc",
 		"start": "node dist/src/run_soical_bots.js",
+		"update_token": "node dist/src/threads_refreash_token.js",
 		"dev": "ts-node run_soical_bots.ts"
 	},
 	"keywords": [],
