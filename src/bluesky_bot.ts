@@ -1,12 +1,13 @@
 import { AtpAgent } from "@atproto/api";
 import sharp from "sharp";
 import { detectFacets, UnicodeString } from "./helpers.js";
+import { API_KEYS } from "./config/api_keys.js";
 
 // --- 1. Init clients ---
 const agent = new AtpAgent({ service: "https://bsky.social" });
 
-const HANDLE = process.env.BLUESKY_HANDLE as string;
-const APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD as string;
+const HANDLE = API_KEYS.BLUESKY_HANDLE;
+const APP_PASSWORD = API_KEYS.BLUESKY_APP_PASSWORD;
 
 export async function postToBlueSky(text: string, imageBuffer: Buffer) {
 	await agent.login({ identifier: HANDLE, password: APP_PASSWORD });

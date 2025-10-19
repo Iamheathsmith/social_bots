@@ -1,14 +1,13 @@
 import path from "path";
 import fs from "fs";
-import "./config.js";
 import { postThread } from "./threads_bot.js";
 import sharp from "sharp";
-import { generateTweetCaption } from "./generate_text_caption.js";
+import { DEFAULT_CAPTION, generateTweetCaption } from "./generate_text_caption.js";
 import { postToBlueSky } from "./bluesky_bot.js";
 async function main() {
     // --- 1. Find images in images/folder ---
-    const imagesDir = path.join(process.cwd(), "src/images");
-    const postedDir = path.join(process.cwd(), "src/posted");
+    const imagesDir = "/home/heath73/Code/Images/images_to_post";
+    const postedDir = "/home/heath73/Code/Images/posted_images";
     if (!fs.existsSync(postedDir)) {
         fs.mkdirSync(postedDir);
     }
@@ -36,7 +35,14 @@ async function main() {
             break;
         quality -= 5;
     }
-    const captionAndHashTags = await generateTweetCaption(imagePath);
+    let captionAndHashTags;
+    try {
+        captionAndHashTags = await generateTweetCaption(imagePath);
+    }
+    catch (error) {
+        console.error("Error generating caption, using default caption:", error);
+        captionAndHashTags = DEFAULT_CAPTION;
+    }
     await postToBlueSky(captionAndHashTags, processedBuffer);
     await postThread(imagePath, captionAndHashTags);
     // --- 3. Move image to posted/ folder ---

@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
+		"watch": "tsc --watch",
 		"build": "tsc",
 		"start": "node dist/src/run_soical_bots.js",
 		"dev": "ts-node run_soical_bots.ts"
@@ -13,19 +14,31 @@
 	"description": "",
 	"dependencies": {
 		"@atproto/api": "^0.16.6",
-		"@google/genai": "^1.0.0",
+		"@google/genai": "^1.25.0",
 		"@google/generative-ai": "^0.24.1",
 		"axios": "^1.11.0",
 		"cloudinary": "^2.7.0",
-		"dotenv": "^17.2.2",
+		"dotenv": "^17.2.3",
 		"form-data": "^4.0.4",
 		"sharp": "^0.34.3",
 		"tlds": "^1.259.0"
 	},
 	"devDependencies": {
-		"@types/node": "^24.3.1",
+		"@types/dotenv": "^8.2.3",
+		"@types/node": "^24.7.0",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.9.2"
+		"typescript": "^5.9.3"
 	},
-	"type": "module"
+	"type": "module",
+	"directories": {
+		"doc": "docs"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Iamheathsmith/social_bots.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Iamheathsmith/social_bots/issues"
+	},
+	"homepage": "https://github.com/Iamheathsmith/social_bots#readme"
 }

@@ -1,13 +1,14 @@
 import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
+import { API_KEYS } from "./config/api_keys.js";
 
-const THREADS_ACCESS_TOKEN = process.env.THREADS_ACCESS_TOKEN as string;
-const THREADS_USER_ID = process.env.THREADS_USER_ID as string;
+const THREADS_ACCESS_TOKEN = API_KEYS.THREADS_ACCESS_TOKEN;
+const THREADS_USER_ID = API_KEYS.THREADS_USER_ID;
 
 cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
-	api_key: process.env.CLOUDINARY_API_KEY as string,
-	api_secret: process.env.CLOUDINARY_API_SECRET as string,
+	cloud_name: API_KEYS.CLOUDINARY_CLOUD_NAME,
+	api_key: API_KEYS.CLOUDINARY_API_KEY,
+	api_secret: API_KEYS.CLOUDINARY_API_SECRET,
 });
 
 /**
