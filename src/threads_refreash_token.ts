@@ -7,6 +7,7 @@ import { API_KEYS } from "./config/api_keys.js";
 const REFRESH_URL = "https://graph.threads.net/refresh_access_token";
 
 async function refreshThreadsToken() {
+	const oldToken = API_KEYS.THREADS_ACCESS_TOKEN;
 	try {
 		const response = await axios.get(REFRESH_URL, {
 			params: {
@@ -27,7 +28,7 @@ async function refreshThreadsToken() {
 		const filePath = path.resolve("./src/config/api_keys.js");
 		fs.writeFileSync(filePath, `export const API_KEYS = ${JSON.stringify(updatedApiKeys, null, 2)};\n`);
 
-		console.log("Threads access token refreshed successfully!");
+		console.log("Threads access token refreshed successfully!", oldToken, "->", access_token);
 	} catch (error) {
 		console.error("Failed to refresh Threads access token:", error);
 	}
