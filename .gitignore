@@ -1,2 +1,4 @@
 node_modules/
 .env
+# Ignore API keys
+src/config/api_keys.ts
