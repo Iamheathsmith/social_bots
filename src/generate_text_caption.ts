@@ -13,9 +13,12 @@ export async function generateTweetCaption(imagePath: string): Promise<string> {
 		const uploadedImage = await ai.files.upload({ file: imagePath });
 
 		const prompt = `
-			Analyze this image and write a tweet that is compelling, natural, and engaging. 
-			The tweet must be less than 290 characters, include 3 relevant hashtags focused on travel and photography, 
-			avoid emojis, and about half the time phrase it as a question. 
+			Analyze this image and write a tweet that is compelling, natural, and engaging. and not overly halmark cliché.
+			The tweet should aim for a length between 200 and 280 characters total (including hashtags). 
+			If necessary to stay within this range, reduce the hashtags to only 2 instead of 3. 
+			If the location in the image can be identified or reasonably inferred, the first hashtag must be the location name (e.g., #Paris, #Tuscany, #LakeComo). 
+			The remaining one or two hashtags should relate to travel, photography, or the general atmosphere of that location (for example, #France #FrenchHoliday or #TravelPhotography #ExploreItaly). 
+			Avoid emojis.
 			Return only the tweet text with hashtags.
 		`;
 		if (!uploadedImage || !uploadedImage.uri || !uploadedImage.mimeType) {

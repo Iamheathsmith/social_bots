@@ -51,6 +51,7 @@ async function main() {
 		console.error("Error generating caption, using default caption:", error);
 		captionAndHashTags = DEFAULT_CAPTION;
 	}
+	console.log("captionAndHashTags: ", captionAndHashTags);
 
 	await postToBlueSky(captionAndHashTags, processedBuffer);
 	await postThread(processedBuffer, captionAndHashTags);
